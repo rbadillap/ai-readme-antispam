@@ -31,7 +31,11 @@ jobs:
           DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- ':(icase)*readme*')
           
           # Output the diff for the next step using safe delimiter
-          printf "diff<<%s\n%s\n%s\n" "__DIFF__" "$DIFF" "__DIFF__" >> $GITHUB_OUTPUT
+          {
+            echo "diff<<__DIFF__"
+            echo "$DIFF"
+            echo "__DIFF__"
+          } >> $GITHUB_OUTPUT
 
       - name: Debug diff
         run: |
