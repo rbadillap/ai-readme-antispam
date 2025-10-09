@@ -3,7 +3,9 @@ name: README Spam Detection
 on:
   pull_request:
     paths:
-      - '**/[Rr][Ee][Aa][Dd][Mm][Ee]*'
+      - '**/README*'
+      - '**/readme*'
+      - '**/Readme*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
