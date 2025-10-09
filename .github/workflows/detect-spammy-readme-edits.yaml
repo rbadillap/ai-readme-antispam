@@ -26,7 +26,7 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           
           # Get the diff using SHAs with robust flags
-          DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- '**/[Rr][Ee][Aa][Dd][Mm][Ee]*')
+          DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- ':(icase)*readme*')
           
           # Output the diff for the next step using safe delimiter
           printf "diff<<%s\n%s\n%s\n" "__DIFF__" "$DIFF" "__DIFF__" >> $GITHUB_OUTPUT
