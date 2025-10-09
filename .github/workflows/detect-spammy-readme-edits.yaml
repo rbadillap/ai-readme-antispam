@@ -3,7 +3,9 @@ name: README Spam Detection
 on:
   pull_request:
     paths:
-      - '**/[Rr][Ee][Aa][Dd][Mm][Ee]*'
+      - '**/README*'
+      - '**/readme*'
+      - '**/Readme*'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
@@ -26,10 +28,12 @@ jobs:
           HEAD_SHA="${{ github.event.pull_request.head.sha }}"
           
           # Get the diff using SHAs with robust flags
-          DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- '**/[Rr][Ee][Aa][Dd][Mm][Ee]*')
+          DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- ':(icase)*readme*')
           
           # Output the diff for the next step using safe delimiter
-          printf "diff<<%s\n%s\n%s\n" "__DIFF__" "$DIFF" "__DIFF__" >> $GITHUB_OUTPUT
+          echo "diff<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Debug diff
         run: |
@@ -89,3 +93,4 @@ jobs:
           # Parse and display specific fields
           echo "Type: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.type }}"
           echo "Reason: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.reason }}"
+
