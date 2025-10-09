@@ -91,3 +91,4 @@ jobs:
           # Parse and display specific fields
           echo "Type: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.type }}"
           echo "Reason: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.reason }}"
+
