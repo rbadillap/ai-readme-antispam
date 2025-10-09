@@ -1,0 +1,91 @@
+name: README Spam Detection
+
+on:
+  pull_request:
+    paths:
+      - '**/[Rr][Ee][Aa][Dd][Mm][Ee]*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  detect-spam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
+      - name: Get diff between PR and destination branch
+        id: get-diff
+        run: |
+          # Get the base and head SHAs from the PR
+          BASE_SHA="${{ github.event.pull_request.base.sha }}"
+          HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          
+          # Get the diff using SHAs with robust flags
+          DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- '**/[Rr][Ee][Aa][Dd][Mm][Ee]*')
+          
+          # Output the diff for the next step using safe delimiter
+          printf "diff<<%s\n%s\n%s\n" "__DIFF__" "$DIFF" "__DIFF__" >> $GITHUB_OUTPUT
+
+      - name: Debug diff
+        run: |
+          echo "=== Debug - Diff ==="
+          echo "${{ steps.get-diff.outputs.diff }}"
+          echo "=== End of Diff ==="
+
+      - name: Analyze README changes for spam
+        id: analyze-readme
+        uses: vercel/ai-action@v2
+        with:
+          prompt: |
+            Some PRs modify only the README with trivial, irrelevant, or promotional link changes. These are considered spam unless:
+              • They fix a real typographical error,
+              • They add useful documentation related to the project,
+              • Or they include verifiable technical examples.
+            
+            Your task is to categorize the changes into one of these categories:
+            - "spam": The changes contain spam content
+            - "unknown": You're not sure if it's spam or not
+            - "none": The changes are legitimate and not spam
+            
+            Here is the git diff:
+            
+            ${{ steps.get-diff.outputs.diff }}
+          schema: |
+            {
+              "$schema": "https://json-schema.org/draft/2020-12/schema",
+              "type": "object",
+              "properties": {
+                "analysis": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "enum": ["spam", "unknown", "none"]
+                    },
+                    "reason": {
+                      "type": "string"
+                    }
+                  },
+                  "required": ["type"],
+                  "additionalProperties": false
+                }
+              },
+              "required": ["analysis"],
+              "additionalProperties": false
+            }
+          model: 'openai/gpt-4o'
+          api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
+          
+      - name: Output spam detection results
+        run: |
+          echo "Spam Detection Results:"
+          echo '${{ steps.analyze-readme.outputs.json }}'
+          
+          # Parse and display specific fields
+          echo "Type: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.type }}"
+          echo "Reason: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.reason }}"
