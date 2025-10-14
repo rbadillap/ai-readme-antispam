@@ -1,0 +1,33 @@
+name: README Spam Detection
+
+on:
+  pull_request:
+    paths:
+      - '**/README*'
+      - '**/readme*'
+      - '**/Readme*'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  detect-spam:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for spam in README changes
+        id: spam-check
+        uses: rbadillap/ai-readme-antispam@v1
+        with:
+          api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
+          model: 'openai/gpt-4o'
+          
+      - name: Output spam detection results
+        run: |
+          echo "Spam Detection Results:"
+          echo "Type: ${{ steps.spam-check.outputs.spam-type }}"
+          echo "Reason: ${{ steps.spam-check.outputs.analysis-reason }}"
+          echo ""
+          echo "Full JSON:"
+          echo '${{ steps.spam-check.outputs.raw-json }}'
+

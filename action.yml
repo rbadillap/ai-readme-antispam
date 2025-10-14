@@ -1,0 +1,103 @@
+name: 'AI README Antispam'
+description: 'Detect spammy README edits using AI to protect your repository from spam pull requests'
+author: 'Ronny Badilla <info@rbadillap.dev>'
+
+branding:
+  icon: 'shield'
+  color: 'red'
+
+inputs:
+  api-key:
+    description: 'API key for AI Gateway (Vercel AI)'
+    required: true
+  model:
+    description: 'AI model to use for analysis'
+    required: false
+    default: 'openai/gpt-4o'
+
+outputs:
+  spam-type:
+    description: 'Type of spam detected (spam, unknown, or none)'
+    value: ${{ steps.set-outputs.outputs.spam-type }}
+  analysis-reason:
+    description: 'Reason for the spam detection result'
+    value: ${{ steps.set-outputs.outputs.analysis-reason }}
+  raw-json:
+    description: 'Full JSON response from AI analysis'
+    value: ${{ steps.analyze-readme.outputs.json }}
+
+runs:
+  using: composite
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+        
+    - name: Get diff between PR and destination branch
+      id: get-diff
+      shell: bash
+      run: |
+        # Get the base and head SHAs from the PR
+        BASE_SHA="${{ github.event.pull_request.base.sha }}"
+        HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+        
+        # Get the diff using SHAs with robust flags
+        DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- ':(icase)*readme*')
+        
+        # Output the diff for the next step using safe delimiter
+        echo "diff<<EOF" >> $GITHUB_OUTPUT
+        echo "$DIFF" >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+
+    - name: Analyze README changes for spam
+      id: analyze-readme
+      uses: vercel/ai-action@v2
+      with:
+        prompt: |
+          Some PRs modify only the README with trivial, irrelevant, or promotional link changes. These are considered spam unless:
+            • They fix a real typographical error,
+            • They add useful documentation related to the project,
+            • Or they include verifiable technical examples.
+          
+          Your task is to categorize the changes into one of these categories:
+          - "spam": The changes contain spam content
+          - "unknown": You're not sure if it's spam or not
+          - "none": The changes are legitimate and not spam
+          
+          Here is the git diff:
+          
+          ${{ steps.get-diff.outputs.diff }}
+        schema: |
+          {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "type": "object",
+            "properties": {
+              "analysis": {
+                "type": "object",
+                "properties": {
+                  "type": {
+                    "type": "string",
+                    "enum": ["spam", "unknown", "none"]
+                  },
+                  "reason": {
+                    "type": "string"
+                  }
+                },
+                "required": ["type"],
+                "additionalProperties": false
+              }
+            },
+            "required": ["analysis"],
+            "additionalProperties": false
+          }
+        model: ${{ inputs.model }}
+        api-key: ${{ inputs.api-key }}
+    
+    - name: Set outputs
+      id: set-outputs
+      shell: bash
+      run: |
+        echo "spam-type=${{ fromJson(steps.analyze-readme.outputs.json).analysis.type }}" >> $GITHUB_OUTPUT
+        echo "analysis-reason=${{ fromJson(steps.analyze-readme.outputs.json).analysis.reason }}" >> $GITHUB_OUTPUT
+
