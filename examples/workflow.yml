@@ -34,5 +34,7 @@ jobs:
           echo "Reason: ${{ steps.spam-check.outputs.analysis-reason }}"
           echo ""
           echo "Full JSON:"
-          echo '${{ steps.spam-check.outputs.raw-json }}'
+          cat << 'EOF'
+          ${{ steps.spam-check.outputs.raw-json }}
+          EOF
 
