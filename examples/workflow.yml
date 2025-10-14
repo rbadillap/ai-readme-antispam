@@ -15,6 +15,11 @@ jobs:
   detect-spam:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
       - name: Check for spam in README changes
         id: spam-check
         uses: rbadillap/ai-readme-antispam@v1

@@ -15,6 +15,16 @@ A GitHub Action to detect spammy README edits using AI to protect your repositor
 
 ## Usage
 
+### Prerequisites
+
+**Important:** This action requires that you checkout your repository first with proper git history. Add this step before using the action:
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0  # Required to access PR commit history
+```
+
 ### Basic Example
 
 ```yaml
@@ -28,6 +38,10 @@ jobs:
   detect-spam:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          
       - uses: rbadillap/ai-readme-antispam@v1
         id: spam-check
         with:
@@ -43,6 +57,10 @@ jobs:
 #### Auto-comment on spam detection
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -66,6 +84,10 @@ jobs:
 #### Auto-close PR on spam detection
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -95,6 +117,10 @@ jobs:
 #### Fail workflow on spam
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -110,6 +136,10 @@ jobs:
 #### Label PRs automatically
 
 ```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0
+
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -159,8 +189,18 @@ It recognizes legitimate changes as:
 - Documentation improvements
 - Technical examples and guides
 
-## Prerequisites
+## Requirements
 
+### 1. Checkout Repository
+This action **requires** that you checkout your repository with git history before using it:
+
+```yaml
+- uses: actions/checkout@v4
+  with:
+    fetch-depth: 0  # Required to access PR commit history
+```
+
+### 2. AI Gateway API Key
 1. **Get an AI Gateway API Key**: Visit [vercel.com/ai-gateway](https://vercel.com/ai-gateway) to create one
 2. **Add secret to your repository**: Settings → Secrets → New secret named `AI_GATEWAY_API_KEY`
 

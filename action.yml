@@ -29,11 +29,6 @@ outputs:
 runs:
   using: composite
   steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      with:
-        fetch-depth: 0
-        
     - name: Get diff between PR and destination branch
       id: get-diff
       shell: bash
@@ -42,8 +37,11 @@ runs:
         BASE_SHA="${{ github.event.pull_request.base.sha }}"
         HEAD_SHA="${{ github.event.pull_request.head.sha }}"
         
+        # Fetch the specific refs to ensure we have the commits locally
+        git fetch origin $BASE_SHA $HEAD_SHA
+        
         # Get the diff using SHAs with robust flags
-        DIFF=$(git diff --no-color --unified=0 $BASE_SHA $HEAD_SHA -- ':(icase)*readme*')
+        DIFF=$(git diff --no-color --unified=0 $BASE_SHA..$HEAD_SHA -- ':(icase)*readme*')
         
         # Output the diff for the next step using safe delimiter
         echo "diff<<EOF" >> $GITHUB_OUTPUT
