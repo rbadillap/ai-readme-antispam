@@ -55,8 +55,9 @@ jobs:
         issue_number: context.issue.number,
         owner: context.repo.owner,
         repo: context.repo.repo,
-        body: '**Spam detected in README changes**\n\n' +
-              'Reason: ${{ steps.spam-check.outputs.analysis-reason }}'
+        body: 'The changes to the README in this PR may not align with the project documentation standards. Please review and ensure the modifications add meaningful value to the project.\n\n' +
+              'Reason: ${{ steps.spam-check.outputs.analysis-reason }}\n\n' +
+              'Feel free to update the PR if needed!'
       })
 ```
 
@@ -77,7 +78,8 @@ jobs:
         issue_number: context.issue.number,
         owner: context.repo.owner,
         repo: context.repo.repo,
-        body: '**Spam detected - Closing PR**\n\nReason: ${{ steps.spam-check.outputs.analysis-reason }}'
+        body: 'This PR may have been opened accidentally or contains changes that don\'t align with our documentation guidelines. I\'m closing it now, but feel free to open a new PR with more substantial documentation improvements!\n\n' +
+              'Reason: ${{ steps.spam-check.outputs.analysis-reason }}'
       })
       
       await github.rest.pulls.update({
@@ -99,7 +101,7 @@ jobs:
 - name: Fail if spam detected
   if: steps.spam-check.outputs.spam-type == 'spam'
   run: |
-    echo "::error::Spam detected: ${{ steps.spam-check.outputs.analysis-reason }}"
+    echo "::error::README changes may not meet documentation standards: ${{ steps.spam-check.outputs.analysis-reason }}"
     exit 1
 ```
 
@@ -162,7 +164,7 @@ It recognizes legitimate changes as:
 
 ## Examples
 
-See the [examples](./examples/) directory for complete workflow configurations.
+See the [examples](https://github.com/rbadillap/ai-readme-antispam/tree/main/examples/) directory for complete workflow configurations.
 
 ## License
 
