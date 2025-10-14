@@ -6,6 +6,12 @@ A GitHub Action to detect spammy README edits using AI to protect your repositor
 
 [![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717.svg?style=flat&logo=github)](https://github.com/rbadillap/ai-readme-antispam)
 
+
+
+https://github.com/user-attachments/assets/60b582f1-3cad-4e5d-8f27-7abacbf4d1bb
+
+
+
 ## Features
 
 - **AI-Powered Detection**: Uses advanced AI models to analyze README changes
