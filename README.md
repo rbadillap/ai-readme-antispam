@@ -4,6 +4,8 @@ A GitHub Action to detect spammy README edits using AI to protect your repositor
 
 [![GitHub Marketplace](https://img.shields.io/badge/Marketplace-AI%20README%20Antispam-blue.svg?colorA=24292e&colorB=0366d6&style=flat&longCache=true&logo=github)](https://github.com/marketplace/actions/ai-readme-antispam)
 
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Repository-181717.svg?style=flat&logo=github)](https://github.com/rbadillap/ai-readme-antispam)
+
 ## Features
 
 - **AI-Powered Detection**: Uses advanced AI models to analyze README changes
@@ -55,9 +57,9 @@ jobs:
         issue_number: context.issue.number,
         owner: context.repo.owner,
         repo: context.repo.repo,
-        body: 'The changes to the README in this PR may not align with the project documentation standards. Please review and ensure the modifications add meaningful value to the project.\n\n' +
-              'Reason: ${{ steps.spam-check.outputs.analysis-reason }}\n\n' +
-              'Feel free to update the PR if needed!'
+        body: "The changes to the README in this PR may not align with the project documentation standards. Please review and ensure the modifications add meaningful value to the project.\n\n" +
+              "Reason: ${{ steps.spam-check.outputs.analysis-reason }}\n\n" +
+              "Feel free to update the PR if needed!"
       })
 ```
 
@@ -78,8 +80,8 @@ jobs:
         issue_number: context.issue.number,
         owner: context.repo.owner,
         repo: context.repo.repo,
-        body: 'This PR may have been opened accidentally or contains changes that don\'t align with our documentation guidelines. I\'m closing it now, but feel free to open a new PR with more substantial documentation improvements!\n\n' +
-              'Reason: ${{ steps.spam-check.outputs.analysis-reason }}'
+        body: "This PR may have been opened accidentally or contains changes that don't align with our documentation guidelines. I'm closing it now, but feel free to open a new PR with more substantial documentation improvements!\n\n" +
+              "Reason: ${{ steps.spam-check.outputs.analysis-reason }}"
       })
       
       await github.rest.pulls.update({
