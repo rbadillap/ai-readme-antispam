@@ -29,10 +29,10 @@ outputs:
 runs:
   using: composite
   steps:
-    # - name: Checkout code
-    #   uses: actions/checkout@v4
-    #   with:
-    #     fetch-depth: 0
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
         
     - name: Get diff between PR and destination branch
       id: get-diff
