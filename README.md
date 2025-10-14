@@ -13,17 +13,39 @@ A GitHub Action to detect spammy README edits using AI to protect your repositor
 - **Flexible Integration**: Use outputs to comment, label, or fail workflows
 - **Fast & Reliable**: Built on Vercel AI Action infrastructure
 
+## How It Works
+
+1. **Detects README changes**: Extracts README file modifications from the current PR
+2. **Analyzes with AI**: Uses AI to understand the context and intent of changes
+3. **Returns results**: Provides structured outputs for you to act upon
+
+The action identifies spam as:
+- Promotional or irrelevant link additions
+- Trivial changes without real value
+- SEO link farming attempts
+
+It recognizes legitimate changes as:
+- Typo fixes
+- Documentation improvements
+- Technical examples and guides
+
+## Inputs
+
+| Input | Required | Default | Description |
+|-------|----------|---------|-------------|
+| `api-key` | Yes | - | API key for AI Gateway (get one at [vercel.com/ai-gateway](https://vercel.com/ai-gateway)) |
+| `github-token` | No | `${{ github.token }}` | [GITHUB_TOKEN](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens) (issues: write, pull-requests: write) or a repo scoped PAT |
+| `model` | No | `openai/gpt-4o` | AI model to use ([see supported models](https://vercel.com/ai-gateway/models)) |
+
+## Outputs
+
+| Output | Description |
+|--------|-------------|
+| `spam-type` | Type of spam detected: `spam`, `unknown`, or `none` |
+| `analysis-reason` | Detailed reason for the classification |
+| `raw-json` | Full JSON response from AI analysis |
+
 ## Usage
-
-### Prerequisites
-
-**Important:** This action requires that you checkout your repository first with proper git history. Add this step before using the action:
-
-```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0  # Required to access PR commit history
-```
 
 ### Basic Example
 
@@ -38,10 +60,6 @@ jobs:
   detect-spam:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          
       - uses: rbadillap/ai-readme-antispam@v1
         id: spam-check
         with:
@@ -57,10 +75,6 @@ jobs:
 #### Auto-comment on spam detection
 
 ```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0
-
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -84,10 +98,6 @@ jobs:
 #### Auto-close PR on spam detection
 
 ```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0
-
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -117,10 +127,6 @@ jobs:
 #### Fail workflow on spam
 
 ```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0
-
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -136,10 +142,6 @@ jobs:
 #### Label PRs automatically
 
 ```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0
-
 - uses: rbadillap/ai-readme-antispam@v1
   id: spam-check
   with:
@@ -158,55 +160,9 @@ jobs:
       })
 ```
 
-## Inputs
+## Live Example
 
-| Input | Required | Default | Description |
-|-------|----------|---------|-------------|
-| `api-key` | Yes | - | API key for AI Gateway (get one at [vercel.com/ai-gateway](https://vercel.com/ai-gateway)) |
-| `model` | No | `openai/gpt-4o` | AI model to use ([see supported models](https://vercel.com/ai-gateway/models)) |
-
-## Outputs
-
-| Output | Description |
-|--------|-------------|
-| `spam-type` | Type of spam detected: `spam`, `unknown`, or `none` |
-| `analysis-reason` | Detailed reason for the classification |
-| `raw-json` | Full JSON response from AI analysis |
-
-## How It Works
-
-1. **Detects README changes**: Monitors PRs that modify README files (case-insensitive)
-2. **Analyzes with AI**: Uses AI to understand the context and intent of changes
-3. **Returns results**: Provides structured outputs for you to act upon
-
-The action identifies spam as:
-- Promotional or irrelevant link additions
-- Trivial changes without real value
-- SEO link farming attempts
-
-It recognizes legitimate changes as:
-- Typo fixes
-- Documentation improvements
-- Technical examples and guides
-
-## Requirements
-
-### 1. Checkout Repository
-This action **requires** that you checkout your repository with git history before using it:
-
-```yaml
-- uses: actions/checkout@v4
-  with:
-    fetch-depth: 0  # Required to access PR commit history
-```
-
-### 2. AI Gateway API Key
-1. **Get an AI Gateway API Key**: Visit [vercel.com/ai-gateway](https://vercel.com/ai-gateway) to create one
-2. **Add secret to your repository**: Settings → Secrets → New secret named `AI_GATEWAY_API_KEY`
-
-## Examples
-
-See the [examples](https://github.com/rbadillap/ai-readme-antispam/tree/main/examples/) directory for complete workflow configurations.
+See this action in action: [rbadillap/test-readme-antispam](https://github.com/rbadillap/test-readme-antispam) - A live repository using this action to automatically detect and close spam PRs.
 
 ## License
 
