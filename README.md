@@ -66,7 +66,7 @@ jobs:
   detect-spam:
     runs-on: ubuntu-latest
     steps:
-      - uses: rbadillap/ai-readme-antispam@v1
+      - uses: rbadillap/ai-readme-antispam@v2
         id: spam-check
         with:
           api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
@@ -81,7 +81,7 @@ jobs:
 #### Auto-comment on spam detection
 
 ```yaml
-- uses: rbadillap/ai-readme-antispam@v1
+- uses: rbadillap/ai-readme-antispam@v2
   id: spam-check
   with:
     api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
@@ -104,7 +104,7 @@ jobs:
 #### Auto-close PR on spam detection
 
 ```yaml
-- uses: rbadillap/ai-readme-antispam@v1
+- uses: rbadillap/ai-readme-antispam@v2
   id: spam-check
   with:
     api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
@@ -133,7 +133,7 @@ jobs:
 #### Fail workflow on spam
 
 ```yaml
-- uses: rbadillap/ai-readme-antispam@v1
+- uses: rbadillap/ai-readme-antispam@v2
   id: spam-check
   with:
     api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
@@ -148,7 +148,7 @@ jobs:
 #### Label PRs automatically
 
 ```yaml
-- uses: rbadillap/ai-readme-antispam@v1
+- uses: rbadillap/ai-readme-antispam@v2
   id: spam-check
   with:
     api-key: ${{ secrets.AI_GATEWAY_API_KEY }}

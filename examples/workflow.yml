@@ -22,7 +22,7 @@ jobs:
           
       - name: Check for spam in README changes
         id: spam-check
-        uses: rbadillap/ai-readme-antispam@v1
+        uses: rbadillap/ai-readme-antispam@v2
         with:
           api-key: ${{ secrets.AI_GATEWAY_API_KEY }}
           model: 'openai/gpt-4o'
