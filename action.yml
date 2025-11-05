@@ -100,6 +100,9 @@ runs:
       id: set-outputs
       shell: bash
       run: |
-        echo "spam-type=${{ fromJson(steps.analyze-readme.outputs.json).analysis.type }}" >> $GITHUB_OUTPUT
-        echo "analysis-reason=${{ fromJson(steps.analyze-readme.outputs.json).analysis.reason }}" >> $GITHUB_OUTPUT
+        echo "spam-type=$SPAM_TYPE" >> $GITHUB_OUTPUT
+        echo "analysis-reason=$ANALYSIS_REASON" >> $GITHUB_OUTPUT
+      env:
+        SPAM_TYPE: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.type }}
+        ANALYSIS_REASON: ${{ fromJson(steps.analyze-readme.outputs.json).analysis.reason }}
 
